@@ -6,19 +6,65 @@
 #   - Show how many tries left
 # Add option to save game at start of turn
 # player guesses a letter
+# tell player when theyve already guessed a word
 # Add win/lose condition
 
-def play_game (word, lives = 6, guesses_arr = [] )
-  puts "Game Start!"
-  loop do
+def save 
+  puts "save game!" # place holder
+  return
+end
 
+def play_game ( word, loaded = false, word_display = "", lives = 6, guesses_arr = [] )
+  
+  puts "Game Start!"
+  if loaded == false # create underscore display for word if new game
+    word_display = word.gsub(/[a-z]/, '_ ')
+  end
+
+  loop do
+    puts "---------------------------------------"
+    puts "The word is { #{word_display} }"
     puts "Incorrect guesses left: #{lives}"
-    break
+    puts "Wrong letters you've guessed: "
+    puts guesses_arr.join(", ")
+    puts "You can enter [save] or"
+    puts "type a letter and enter..."
+    input = gets.chomp.downcase()
+    if input == "save"
+      save()
+      break
+    elsif input.length == 1 && input.match(/[a-z]/)
+      if guesses_arr.any?(input) || word_display.split.any?(input)
+        puts "...well this is awkward..."
+        puts "You guessed that letter already..."
+      elsif word.split('').any?(input)
+        puts "Congrats you found a match!"
+        display_arr = word_display.split # turn display into an array
+        word_arr = word.split('') # turn mystery word into an array
+        word_arr.each_with_index do |letter, index| # cycle through to find matches and change the display
+          if letter == input
+            display_arr[index] = input
+          end
+        end
+        word_display = display_arr.join(' ') # put display back together
+      else
+        puts "Nope! That's not it"
+        puts "-1 guesses left..."
+        lives -= 1
+        guesses_arr << input
+      end
+    else 
+      puts "Please try again..."
+    end
+
+    # WIN / LOSE CONDITIONS
+    
   end
 end
 
 def load_game
   puts "load game!" # place holder
+  return
 end
 
 def new_game
@@ -40,7 +86,7 @@ def new_game
   until mystery_word.length.between?(5,12)
     mystery_word = find_word()
   end
-  p mystery_word
+  p mystery_word # remove this before production
   play_game(mystery_word)
 end
 
