@@ -1,20 +1,11 @@
-# load in the dictionary
-# randomly select a word 5-12 characters
-# display layout
-#   - Show which correct letters 
-#   - Show incorrect guesses
-#   - Show how many tries left
 # Add option to save game at start of turn
-# player guesses a letter
-# tell player when theyve already guessed a word
-# Add win/lose condition
 
 def save 
   puts "save game!" # place holder
   return
 end
 
-def play_game ( word, loaded = false, word_display = "", lives = 6, guesses_arr = [] )
+def play_game ( word, loaded = false, word_display = "", lives = 1, guesses_arr = [] )
   
   puts "Game Start!"
   if loaded == false # create underscore display for word if new game
@@ -58,7 +49,21 @@ def play_game ( word, loaded = false, word_display = "", lives = 6, guesses_arr 
     end
 
     # WIN / LOSE CONDITIONS
-    
+    if lives <= 0 
+      puts "Oh no you ran out of guesses!"
+      puts "Looks like you lose!"
+      puts "The word was #{word}"
+      puts "Number of incorrect guesses: #{guesses_arr.length}"
+      puts "Better luck next time!"
+      break
+    end
+    if word_display.split.any?('_') == false
+      puts "You guessed the word!"
+      puts "Congradulations you win!"
+      puts "Number of incorrect guesses: #{guesses_arr.length}"
+      puts "Thanks for playing!"
+      break
+    end
   end
 end
 
