@@ -129,7 +129,6 @@ def new_game
   until mystery_word.length.between?(5,12)
     mystery_word = find_word()
   end
-  p mystery_word # remove before production
   play_game(mystery_word)
 end
 
