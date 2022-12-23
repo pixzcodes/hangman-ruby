@@ -1,11 +1,54 @@
-# Add option to save game at start of turn
+# HANGMAN
 
-def save 
-  puts "save game!" # place holder
-  return
+
+
+def save (word, word_display, lives, guesses_arr)
+  puts "...saving..." 
+  filename = "saves/#{word_display.delete(' ')}.txt"
+
+  File.open(filename, 'w') do |file|
+    file.puts word
+    file.puts word_display
+    file.puts lives
+    file.puts guesses_arr.join(' ')
+  end
+  puts "Game saved as #{filename}"
+  main()
 end
 
-def play_game ( word, loaded = false, word_display = "", lives = 1, guesses_arr = [] )
+def load_game
+  puts "load game!" # place holder
+  games = []
+  Dir['saves/*'].each_with_index do |file, index|
+    puts "Save ##{index + 1}: #{file}"
+    games << file
+  end
+  puts "Please enter the number of the game file"
+  puts "you would like to load..."
+  loop do
+    input = gets.chomp
+    if games.values_at(input.to_i).any? && input.match(/\d+/)
+      puts "File selected: #{games[input.to_i - 1]}"
+      game_file = File.new(games[input.to_i - 1])
+      word = game_file.gets.chomp
+      word_display = game_file.gets.chomp
+      lives = game_file.gets.chomp.to_i
+      guesses_arr = game_file.gets
+      game_file.close
+      if guesses_arr == nil
+        guesses_arr = []
+      else
+        guesses_arr = guesses_arr.chomp.split
+      end
+      play_game(word, true, word_display, lives, guesses_arr)
+      break
+    else
+      puts "Please try again"
+    end
+  end
+end
+
+def play_game ( word, loaded = false, word_display = "", lives = 6, guesses_arr = [] )
   
   puts "Game Start!"
   if loaded == false # create underscore display for word if new game
@@ -22,7 +65,7 @@ def play_game ( word, loaded = false, word_display = "", lives = 1, guesses_arr 
     puts "type a letter and enter..."
     input = gets.chomp.downcase()
     if input == "save"
-      save()
+      save(word, word_display, lives, guesses_arr)
       break
     elsif input.length == 1 && input.match(/[a-z]/)
       if guesses_arr.any?(input) || word_display.split.any?(input)
@@ -67,11 +110,6 @@ def play_game ( word, loaded = false, word_display = "", lives = 1, guesses_arr 
   end
 end
 
-def load_game
-  puts "load game!" # place holder
-  return
-end
-
 def new_game
   puts "new game!" # place holder
   def find_word 
@@ -91,7 +129,7 @@ def new_game
   until mystery_word.length.between?(5,12)
     mystery_word = find_word()
   end
-  p mystery_word # remove this before production
+  p mystery_word # remove before production
   play_game(mystery_word)
 end
 
@@ -101,20 +139,20 @@ def main
   puts "Welcome to Hangman!"
   puts "Would you like to start a new game or load a previous game?"
   puts "reply: [new] [load] [quit]"
-  input = gets.chomp.downcase # get input
-  if input == "new"
-    new_game()
-  elsif input == "load"
-    load_game()
-  elsif input == "quit"
-    return
-  else
-    puts "Please try again"
-    main() # recursion yikes
+  loop do
+    input = gets.chomp.downcase # get input
+    if input == "new"
+      new_game()
+      break
+    elsif input == "load"
+      load_game()
+      break
+    elsif input == "quit"
+      break
+    else
+      puts "Please try again"
+    end
   end
 end
 
-# main() # init main game
-
-#remove this when done testing
-new_game()
+main() # init main game
